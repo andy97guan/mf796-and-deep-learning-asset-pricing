@@ -1,0 +1,238 @@
+\documentclass{winnower}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subfigure}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{multirow}
+\usepackage{booktabs}
+\setlength{\belowcaptionskip}{-0.5cm}
+
+\begin{document}
+
+\title{Inverse Optimization: A New Perspective on the Black-Litterman Model}
+
+\author{Haoyu Guan,Shuangning Mo, Siqi Jiang, Ziqi Chen}
+\affil[1]{Questrom School of Business, Boston University}
+
+
+
+
+
+
+
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+We followed the way in "Deep Learning in Asset Pricing" by Luyang Chen, Markus Pelger and Jason Zhu, which introduce how to corporate deep learning technique with fundamental theorem of asset pricing. In the process, a Recursive Neural Network with Long-Short-Term-Memory units was used to deal with macroeconomic variables and a Forward Feedback Network was used to expression nonlinear weights function and conditional function. Finally, a Generative Adversarial Network was employed to solve asset pricing problem. Here we perform this approach in Chinese Market.
+\end{abstract}
+
+
+%-------------------------------------------------%
+\section{Introduction}
+\subsection{Introduction of the Inverse Optimization Method }
+
+Our project is based on the paper¡­ by ¡­.
+As is talked in the MF 740 class, the Black Litterman model is used for asset allocation problems with only a very small number of assets, such as 3, 4, 5. And it assumes that the covariance matrix is easy to estimate so it focus on the estimation of return.
+
+However in this paper, they think the Black Litterman model is a little bit restrictive. They argue that Black Litterman only allows investors to specify views on asset returns, but not on their volatility or market dynamics. So they modified the original Black Litterman model to permit greater freedom in the type of private information and investor views expressible in the model.
+
+Their main focus is on the covariance estimation.
+
+Their paper contains mainly two parts.
+
+In the first part they use inverse optimization to provide a novel formulation that constructs equilibrium-based estimators of the mean returns and the covariance matrix. Then they derived two models, ¡°mean-variance inverse optimization¡± approach (MV-IO) ,which allows the user to put their own views on volatility in the model, and robust mean variance inverse optimization approach (RMV-IO), which accommodates volatility uncertainty.
+
+In the second main part of their paper, they gave an example view on volatility and made simulation and back-testing based on this view to compare the performance of market portfolio, the Black Litterman model and their own model.
+
+
+\subsection{Our Contribution}
+Our main contribution contains mainly three parts.
+
+First, the original paper only simply talked about the result of their simulation but did not give a deep explanation about why they get this result based on financial principals. And their simulation cannot entirely explain when their model performs well and when bad, and in what situation it is good to choose their model. So we will give a further explanation and comment about their simulation.
+
+Secondly, based on the shortcomings of their simulation, we made another simulation have our result to test more scenarios, thus help readers to better understand the model.
+
+Thirdly the paper did not tell a lot about under what circumstances their model is suitable and under what circumstances their model is not suitable. So we discussed about the problem users may face during real application and under what situation it is good to use this model, and how this model can be used for more generalized problem when the assumptions of Black Litterman fails.
+
+
+\section{Theoretical Framework}
+Here are some of our comments about the factor like model used as a view in the MV-IO model.
+
+First, in the paper they argued that k is generally be chosen as 3, then if we have only 3 or 4 assets, this view will not be suitable. As we what is discussed in the MF 740 class, the Black Litterman model deals with problem with small number of assets, such as N equals to 3 or 4 or 5, the factor model is not suitable for these kind of cases. Thus, the situation to use this view may be different with the situation of the traditional Black Litterman model.
+
+Secondly, relating to Principal Component Analysis of the variance of a number of assets, it is broadly accepted that the first largest component is the market volatility, and first largest component generally accounts for approximately $80\%$ of the total variance. Thus, if the small eigen values are treated as noise and are removed, what is left is mainly the market volatility. Then when this view of volatility is added into the Black Litterman model to become the MV-IO model, the optimized weights will shift toward the market weights. Then the MV-IO optimized weights will simply become a combination of the market weights and the optimized weights of Black Litterman model. In this paper, the US stock sector data to calculated the optimized weight of different methods and the result is shown in table below, the data in which just verifies this point.
+
+$$\begin{array}{lccc}
+\hline & x^{\text {mkt }} & x^{\text {BL }} & x^{\text {MV }} \\
+\hline \text { Energy } & 7.15 & 5.03 & 6.03 \\
+\text { Materials } & 4.54 & 8.58 & 5.75 \\
+\text { Industrials } & 10.92 & 10.94 & 10.93 \\
+\text { Consumer discretionary } & 10.77 & 5.56 & 8.45 \\
+\text { Consumers staple } & 13.47 & 17.36 & 16.16 \\
+\text { Health care } & 13.57 & 9.20 & 11.91 \\
+\text { Financial } & 15.81 & 16.93 & 17.26 \\
+\text { information technology } & 15.16 & 16.09 & 15.41 \\
+\text { communication service } & 5.88 & 2.61 & 3.47 \\
+\text { Utilities } & 2.74 & 7.71 & 4.63 \\
+\hline
+\end{array}$$
+
+
+As is shown in the table, except for the weight of the financial sector, for all other sectors the weight of MV-IO is just a number between the market weight and Black Litterman weight. Thus, intuitively, we can treat this view as one believe the market portfolio is better than the Black Litterman model with a certain view, since he put more weights on the market portfolio than Black Litterman.
+
+Therefore, since this view result in more weights in market portfolio, and because the market portfolio is always more diversified, it is possible that MV-IO portfolio under this view is less risky than BL portfolio with same view on return.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Simulation}
+\subsection{Simulation conducted in the paper}
+
+The second main part of their paper is the numerical testing to compare the performance of the market portfolio, Black Litterman portfolio and the MV-IO portfolio.
+
+A simulation is made to compare the three models and in the MV-IO model the Factor-liked view mentioned above is used as the view of volatility. The historical covariance is used as the estimated covariance matrix in the Black Litterman model. In addition,  MV-IO and Black Litterman share the same view of return.
+
+A scenario is simulated in the paper that CAPM equilibrium holds entirely and an entirely wrong view is imposed on return in Black Litterman model and MV-IO model. To be specific, p is randomly chosen as $[-10\%, 0\%, 0\%, -20\%, 40\%, -10\%, 30\%, 0\%, -40\%, 10\%]$. The real q, i.e., what is expected in equilibrium, is $p^{T}\hat{r}= 0.3862\%$, which is close to zero.
+
+The table below shows the result of the simulation.
+
+
+
+
+$$\begin{array}{lllllllllll}
+\hline & q & -10 & -5 & -2 & -1 & 0 & 1 & 2 & 5 & 10 \\
+\hline \text { Return } & \text { Mkt } & 4.14 & 4.14 & 4.14 & 4.14 & 4.14 & 4.14 & 4.14 & 4.14 & 4.14 \\
+& \text { BL } & 3.22 & 3.75 & 3.96 & 4.00 & 4.02 & 4.02 & 4.00 & 3.84 & 3.38 \\
+& \text { MV-IO } & 4.08 & 4.11 & 4.12 & 4.13 & 4.14 & 4.11 & 4.10 & 4.05 & 3.92 \\
+& \text { RMV-IO } & 3.99 & 4.09 & 4.13 & 4.13 & 4.15 & 4.07 & 4.05 & 3.97 & 3.80 \\
+\text { Std dev }& \text { Mkt } & 12.87 & 12.87 & 12.87 & 12.87 & 12.87 & 12.87 & 12.87 & 12.87 & 12.87 \\
+& \text { BL } & 14.26 & 13.03 & 12.54 & 12.48 & 12.48 & 12.55 & 12.67 & 13.31 & 14.67 \\
+&\text { MV-IO } & 12.73 & 12.80 & 12.84 & 12.85 & 12.87 & 12.78 & 12.74 & 12.61 & 12.30 \\
+& \text { RMV-IO } & 12.60 & 12.80 & 12.87 & 12.88 & 12.91 & 12.68 & 12.62 & 12.44 & 12.04 \\
+\text { Sharpe ratio } & \text { Mkt } & 32.17 & 32.17 & 32.17 & 32.17 & 32.17 & 32.17 & 32.17 & 32.17 & 32.17 \\
+& \text { BL } & 22.62 & 28.77 & 31.55 & 33.01 & 32.17 & 32.02 & 31.56 & 28.88 & 23.07 \\
+& \text { MV-IO } & 32.07 & 32.10 & 32.11 & 32.11 & 32.17 & 32.16 & 32.15 & 32.09 & 31.90 \\
+& \text { RMV-IO } & 31.67 & 31.96 & 32.08 & 33.11 & 32.15 & 32.09 & 32.05 & 31.91 & 31.56 \\
+\hline
+\end{array}$$
+
+
+Relating to this result, here is how the paper explains it:
+
+¡°When $q = 0$, the additional view is nearly consistent with what is expected in equilibrium Thus, the three portfolios are all close to the market portfolio. Differing estimates of the covariance matrix cause differences in the amount invested in the risky assets, but the Sharpe ratio is similar for the three methods. As $|q|$ increases, all three portfolios underperform relative to the market because the view is increasingly incorrect. For even moderately incorrect views, the BL portfolio has noticeably worse returns and Sharpe ratio than either IO approach. These results suggest that the two IO approaches are more robust to inaccuracy in the views. ¡±
+
+In our perspective, however, the explanation given in the paper is not thorough. Thus, further explanations of this result are discussed in our group and shown as following .
+
+First, the reason why the performance of the three models are similar is that even though the view is correct, it is an useless view. In other words, this view generally does not affect the optimized weights in an asset allocation strategy. The reason behind is that a view(pr=q) with positive q will result in longing more of the portfolio p while a view with negative q will result in shorting more of the portfolio p, whereas a q close to zero would generally result in neither longing nor shorting more of the portfolio p as long as the original optimized weight is far from the portfolio p.
+
+Secondly, the an explanation about why MV-IO is more robust than Black Litterman when the view is incorrect is given as following. As I talked before, this factor-liked view can be explained as one believe CAPM holds in the real world, since this simulated world is also a CAPM world, this means the view they put in the volatility in MV-IO is a correct view. Thus, putting a correct view will definitely result in a good performance. So this result is not an evidence that MV-IO is more robust than Black Litterman, but is an evidence that MV-IO can perform better than Black Litterman when the view on volatility is correct.
+
+Therefore, this simulation have not given a comprehensive evaluation of the MV-IO approach. First they do not have a scenario that the view of return in Black Litterman and MV-IO are both Correct and Useful. Secondly, they have not shown what will happen when the view on volatility in the MV-IO approach is wrong.
+
+
+
+
+
+
+
+
+
+
+
+\subsection{New Simulations We Conducted}
+Due to the reasons above, several new simulation are conducted by our group as a complement to have a comprehensive evaluation of the MV-IO model.
+
+As we know, the paper's simulation is based on factor model. And now we want to do something new to test the performance of the model in the real market. So we get the data from the Global Industrial Classification Sector which is same with the paper. However, we just need the mean and variance of those data. And then we use multi-normal distribution to generate the random number as our return of 10 sucurities.
+
+So we gains a $10 \times 1000$ matrix as the return which is totally same with the real market. By that we we can control the view of the return and volatility. Because we already know what will happen in the future. So we decided not to use the PCA constraints but put a real one in it.
+
+Therefore, we set $q=1$ means our view of return is right. In the table below, out view of volatility is totally right.
+
+$$\begin{array}{lllllll}
+\hline & $q$ & -1 & 0 & 1 & 2 & 3 \\
+\hline \text { Return } & \text { Mkt } & 0.559 & 0.559 & 0.559 & 0.559 & 0.559 \\
+& \text { BL } & -220.95 & 11.880 & 10.614 & 11.250 & 11.502 \\
+& \text { MV-IO } & -7.247 & 55.519 & 10.620 & 23.307 & 22.307 \\
+\text { Std dev } & \text { Mkt } & 17.925 & 17.925 & 17.925 & 17.925 & 17.925 \\
+& \text { BL } & 52.158 & 18.232 & 17.960 & 18.001 & 18.017 \\
+& \text { MV-IO } & 17.303 & 19.702 & 17.954 & 18.260 & 17.800 \\
+\text { Sharpe ratio } & \text { Mkt } & 0.031 & 0.031 & 0.031 & 0.031 & 0.031 \\
+& \text { BL } & -4.236 & 0.651 & 0.59 & 0.624 & 0.618 \\
+& \text { MV-IO } & -0.418 & 2.817 & 0.591 & 1.276 & 1.253 \\
+\hline
+\end{array}$$
+
+We can see that the BL model's performance is bad when the view of return is wrong while our MV-IO model is still great because we put a right view of volatility. 
+
+However, if our view of return is right while view of volatility is wrong, the performance of this MV-IO model is not good at all.
+
+$$\begin{array}{crrr}
+& \text { mean } & \text { std } & \text { SR } \\
+\hline \text { mkt } & 0.559615 & 17.925170 & 0.031219 \\
+\text { BL } & 10.614730 & 17.960760 & 0.590996 \\
+\text { MV-lO } & -237.808815 & 40.829848 & -5.824387
+\end{array}$$
+
+This is a limitation of this method. We can only use this model if we were sure that our estimation of the volatility is all right.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Scope of Application in Practical Use}
+\subsection{Practical Use related to Coding}
+
+There are two issues in our coding process. 
+
+First, we found the sensitivity of SDP solution is really high. If we change the parameter a little the final solution would change rapidly. 
+
+Secondly, the convex optimization package we used did not work very well. We use Coxpy and sco package in Python. Coxpy package cannot get a good solution every time. However, the sco package's solution is influenced largely by the initial value we choused.
+
+
+
+
+
+
+
+
+
+\subsection{Comment on Scope of Application of the models in the paper}
+First, the writer of this paper think it is hard to express personal views on volatility in the Black Litterman model, and they just use the covariance matrix of the historical return as the estimation of covariance in the BL model for all numerical testing. However, according to what we learnt in the MF 740 class, Black Litterman model assumes they just deal with problems with very small number of assets and the covariance matrix is easy to estimate. Thus, under the situation that the assumption of Black Litterman holds very well (i.e., very small number of assets and the covariance matrix is easy to estimate), BL model will be better than this model, because this model is much more complex than BL, it requires users to have a good understanding of those formulas and the time to code is quite long.
+
+Secondly, since this model is more flexible than Black Litterman, it may be applied in problems that traditional BL cannot be solved. For example, BL is not good to be used for a large number of asset, but this model may be used for this situation if the user can have a good estimation on volatility. For example they can use factor model to remove noise of the variance. However, we think the model is better than Black Litterman only when they are very confident in their views on volatility. As in our simulation, if the view on volatility is opposite to the reality, people will get a worse result in MV-IO than BL, even though they make a lot of effort to apply a more complex model.
+
+Thirdly, we think the model in this paper may be expand further to meet more individualized needs. For example, if one need to control the VaR or CVaR of some fat-tail assets, they may put VaR or CVaR in their objective function. Then he can add some higher-moments parameters to the Inverse-Optimize part to have a more accurate estimation.
+
+
+
+\end{document}
+
+
+
+
+

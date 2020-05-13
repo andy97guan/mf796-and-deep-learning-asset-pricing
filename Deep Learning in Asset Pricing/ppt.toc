@@ -1,0 +1,8 @@
+\beamer@endinputifotherversion {3.14pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Basic Conception}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Stochastic Discount Factor}{3}{0}{1}
+\beamer@sectionintoc {2}{Models}{5}{0}{2}
+\beamer@subsectionintoc {2}{1}{Neural Networks: SGD, LSTM, GAN}{5}{0}{2}
+\beamer@sectionintoc {3}{Empirical Results}{8}{0}{3}
+\beamer@sectionintoc {4}{Conclusion}{10}{0}{4}

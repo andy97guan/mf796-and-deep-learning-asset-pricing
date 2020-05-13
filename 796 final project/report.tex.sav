@@ -1,0 +1,164 @@
+\documentclass{winnower}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subfigure}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{multirow}
+\usepackage{booktabs}
+\setlength{\belowcaptionskip}{-0.5cm}
+
+\begin{document}
+
+\title{Deep Learning in Asset Pricing}
+
+\author{Chang Deng, Haoyu Guan, Yanbin Liu, Yuxuan Liu}
+\affil[1]{Questrom School of Business, Boston University}
+
+
+
+
+
+
+
+\date{\today} 
+
+\maketitle
+
+\begin{abstract}
+We followed the way in "Deep Learning in Asset Pricing" by Luyang Chen, Markus Pelger and Jason Zhu, which introduce how to corporate deep learning technique with fundamental theorem of asset pricing. In the process, a Recursive Neural Network with Long-Short-Term-Memory units was used to deal with macroeconomic variables and a Forward Feedback Network was used to expression nonlinear weights function and conditional function. Finally, a Generative Adversarial Network was employed to solve asset pricing problem. Here we perform this approach in Chinese Market.
+\end{abstract}
+
+
+%-------------------------------------------------%
+\section{Introduction}
+\subsection{Fundamental Theorem of Asset Pricing}
+In finance, by the First Fundamental Theorem of Asset Pricing, if we have the no-arbitrage condition satisfied, then there exist a stochastic discount factor(SDF), such that:
+
+$$\mathbb{E}_{t}\left[M_{t+1} R_{t+1, i}^{e}\right]=0$$
+
+where the $M_{t+1}$ is the SDF at time $t+1$, and the $R_{t+1, i}^{e}$ is the excess return of asset $i$ at time $t+1$.
+
+The stochastic discount factor(SDF) is an affine transformation of the tangency portfolio, we then have the following expression of stochastic discount factor(SDF):
+
+$$M_{t+1}=1-\sum_{i=1}^{N} \omega_{t, i} R_{t+1, i}^{e}=1-\omega_{t}^{\top} R_{t+1}^{e}$$
+
+Plug Equation (2) back into Equation (1), given no-arbitrage condition satisfied, we then have:
+
+$$\omega_{t}=\mathbb{E}_{t}\left[R_{t+1}^{e} {R_{t+1}^{e}}^T \right]^{-1} \mathbb{E}_{t}\left[R_{t+1}^{e}\right]$$
+
+which are the portfolio weights of conditional mean-variance efficient portfolio.
+
+In this research, we are trying to generate the function of these weights:
+
+$$\omega_{t, i}(I_t, I_{t, i})$$
+in which $I_t$ represent the information set of macroeconomic variable at time $t$, while the $I_{t, i}$ represent the specific microeconomic variable of company $i$ at time $i$
+
+In one way, since these weights form a conditional mean variance efficient portfolio, we can directly trade this portfolio in the market. In th other way, these weights also shows an optimal strategy in every time $t$, and the function helps us to update easily.
+
+\subsection{Generative Adversarial Method of Moment}
+In order to find the function for the SDF weights, we need to solve a moment of methods problem. The no-arbitrage condition implies that we need to satisfy:
+
+$$\mathbb{E}\left[M_{t+1} R_{t+1, i}^{e} g\left(I_{t}, I_{t, i}\right)\right]=0$$
+for infinitely many function $g:\mathbb{R}^{p} \times \mathbb{R}^{q} \rightarrow \mathbb{R}^{d}$. The unconditional moment condition can be thought as the pricing error for a choice of portfolios and times determined by $g(.)$. The challenge lies in finding the relevant moment conditions to identify the SDF.
+
+In the paper, they come up with a min-max problem that characterizes all the above observation:
+$$\min _{\omega} \max _{g} \frac{1}{N} \sum_{j=1}^{N}\left\|\mathbb{E}\left[\left(1-\sum_{i=1}^{N} \omega\left(I_{t}, I_{t, i}\right) R_{t+1, i}^{e}\right) R_{t+1, j}^{e} g\left(I_{t}, I_{t, j}\right)\right]\right\|^{2}$$
+in this min-max optimization problem, we are actually minimizing the violation of no-arbitrage condition from Fundamental Theorem of Asset Pricing, which is to find a function $\omega$ that can perform the best under the "worst" case: a optimal function $g$ that can maximize the violation.
+
+\subsection{Deep Learning Algorithms}
+In order to solve this min-max optimization problem, the paper introduce the following procedure:
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=6in,height=3in]{1.png}
+\caption{Model Architecture}
+\label{fig:graph}
+\end{figure}
+It contains mainly two part, one of which is the SDF Network, the other of which is the Conditional Network. Finally these two parts are joined to calculate the loss and be optimized by a GAN optimizer.
+
+Then we take a look at each component in this architecture.
+
+\subsubsection{Forward Feedback Network}
+A forward feedback network is a dense neural network. It contains three components. The input layer takes in the each sample with multiple features at a time and the pass them into the next layer. The hidden layers perform the nonlinear calculate. Each hidden layer takes the output of previous layer as input, then take a linear transform, and impose a nonlinear activation function in the end, then finally pass it to the next layer. The output layer takes in the output of hidden layers, and then generate the required output. The typical image of the FFN is shown in Figure 2.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=5in,height=3in]{2.png}
+\caption{Model Architecture}
+\label{fig:graph}
+\end{figure}
+
+In the architecture, FFN is used in both the SDF Network and Conditional Network. In SDF Network, FFN is used to express weights function $\omega$. In Conditional Network, FFN is used to show the multiple moment conditions $\hat{g}$.
+
+\subsubsection{Recursive Neural Network}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsubsection{Generative Adversarial Network}
+Notice here we are actually facing a min-max problem, where the SDF Network is aiming to minimize the loss, while the Conditional Network is purposed at maximizing the loss. We implement the approach in the following ways.
+\begin{itemize}
+    \item First, consider unconditional loss function, that is without $\hat{g}$, and solve the minimization problem and get a initial value for the parameters in the SDF network.
+    \item Second, fix the parameters in the SDF network. Solve the maximization problem in the Conditional Network and get the optimal value for the parameters in the Conditional Network.
+    \item Third, fix the parameters in the Conditional network. Solve the minimization problem in the SDF Network and get the optimal value for the parameters in the SDF Network.
+    \item implement the above repeated until the loss function becomes stable.
+\end{itemize}
+
+\subsubsection{Loss Function}
+The loss function in our approach is:
+$$L\left(\omega | \hat{g}, I_{t}, I_{t, i}\right)=\frac{1}{N} \sum_{i=1}^{N}\left\|\frac{1}{T} \sum_{t \in T} M_{t+1} R_{t+1, i}^{e} \hat{g}\left(I_{t}, I_{t, i}\right)\right\|^{2}$$
+
+\section{Empirical Results}
+\subsection{Data Source}
+\subsubsection{Stocks}
+\subsubsection{Macroeconomic Data}
+\subsubsection{Microeconomic Data}
+
+\subsection{Results}
+Here we divide the data into three disjoint sets. The first is used for training purpose, the second is used for tuning hyperparameters. And the last is used to serve as test set.
+
+By tuning in the validation set, we get the following optimal hyperparameters  as shown in the chart 1.
+
+
+Then we use this set of parameter to the test set, and get the following result. Here we use the equally weighted portfolio and mean-variance portfolio as benchmark.
+
+\section{Conclusion}
+Our constructed non-linear pricing model performs better than others as we take into account the interrelationship of the vast amount of conditioning characteristics, while considering factors for time-variation. In order to generate this optimal pricing model, we implement three different deep neural network structures together which are Forward Feedback Network, Recursive Neural Network, and Generative Adversarial Network.  Our innovation is on the basis of no-arbitrage theory, then to estimate the stochastic discount factor that explains different asset returns. Our SDF is a portfolio of all traded assets on Chinese stock market with time-varying portfolio weights which are general functions of the observable firm-specific , macroeconomic, and microeconomic variables. Our pricing model enables us to identify mis-pricing of sticks, understands the main factors that drive asset prices, and generates the optimal mean-variance portfolio.
+
+Our pricing model is beneficial to investors and portfolio managers.  Since our model can outperform the benchmark and be tested on explaining our SDF factor portfolio with respect to the risk exposure.  We tested that our model performs better than the liner models as we incorporate the information of all characteristics and macroeconomics factors into a group number of firms. Also we implemented macroeconomic time-series as hidden states that captures the relevant macroeconomic information for asset pricing. Finally, our model generated the risk measure
+\begin{math}
+\beta
+\end{math} and the optimal portfolio weight \begin{math}
+\omega
+\end{math} as a function of characteristics and macroeconomic variables. The user of our model will be able to determine the risk measure and allocate portfolio weights in a more comprehensive way.
+
+\nocite{*}
+\bibliography{references.bib}
+
+
+\end{document}
+
+
+
+
+
